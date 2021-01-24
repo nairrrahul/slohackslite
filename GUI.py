@@ -74,17 +74,22 @@ def dc(choice):
 
 
 def clear_function():
+    global mix, miy, mx, may
     plt.cla()
     mix, miy, mx, may = -10, -10, 10, 10
     plt.axis((mix, mx, miy, may))
     graph.plot(xa0, ya0, color='black')
     graph.plot(xa1, ya1, color='black')
-    graph_canv = FigureCanvasTkAgg(fig, master=window)
     graph_canv.draw()
+    graph_canv.get_tk_widget().grid(row=1, column=1, rowspan=4, columnspan=5)
 
 
 def graph_function(list_func, min, max):
     try:
+        if len(list_func) == 0:
+            graph_canv.draw()
+            graph_canv.get_tk_widget().grid(row=1, column=1, rowspan=4, columnspan=5)
+            return
         plt.cla()
         graph.plot(xa0, ya0, color='black')
         graph.plot(xa1, ya1, color='black')
