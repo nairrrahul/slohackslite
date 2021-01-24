@@ -15,6 +15,13 @@ mix, miy, mx, may = -10, -10, 10, 10
 fig = plt.figure(figsize=(4, 3))
 graph = fig.add_subplot(111)
 plt.axis((mix, mx, miy, may))
+
+xa0, ya0 = [mix*10, mx*10], [0, 0]
+xa1, ya1 = [0, 0], [miy*10, may*10]
+
+graph.plot(xa0, ya0, color='black')
+graph.plot(xa1, ya1, color='black')
+
 graph_canv = FigureCanvasTkAgg(fig, master=window)
 graph_canv.draw()
 
@@ -51,11 +58,13 @@ def add_num():
 
 def dc(choice):
     actual_error.configure(text="")
-    global text_list
+    global text_list, mp_list
     try:
         text_list.pop()
+        mp_list.pop()
         if choice == 1:
             text_list = []
+            mp_list = []
         update_base()
     except IndexError:
         actual_error.configure(text="Cannot Remove From \nEmpty Eq.")
@@ -64,17 +73,29 @@ def dc(choice):
 def graph_function(list_func, min, max):
     # yo please what the heck is happening here man
     b_s = ''
-    for i in list_func:
-        b_s += i
-    x1 = np.array(range(min*10, max*10+1))
+    good_list = ''
+    for i in range(len(list_func)):
+        b_s += list_func[i]
+        good_list += text_list[i]
+    x1 = np.array(range(int(min)*10, int(max)*10+1))
     x = x1/10
+    x_0 = x.tolist()
     y = eval(b_s)
-    print(x)
-    print(y)
+    y_0 = y.tolist()
     plt.axis((mix, mx, miy, may))
-    graph.plot(x, y)
-    eq_y.configure(text="y="+b_s)
+    graph.plot(x_0, y_0)
+    eq_y.configure(text="y="+good_list)
+    graph_canv.draw()
     graph_canv.get_tk_widget().grid(row=1, column=1, rowspan=4, columnspan=5)
+
+
+def zoom_in():
+    global mix, mx, miy, may
+    mix, mx, miy, may = mix/2, mx/2, miy/2, may/2
+    plt.cla()
+    graph.plot(xa0, ya0, color='black')
+    graph.plot(xa1, ya1, color='black')
+    graph_function(mp_list, mix/2, mx/2)
 
 
 title = tk.Label(text="PyGrapher", font=("Consolas", 20))
@@ -98,7 +119,7 @@ num_b.grid(row=8, column=0)
 
 con_h = tk.Label(text="Controls", font=("Arial", 12), bg="#E0E0E0")
 con_h.grid(row=1, column=6)
-con_zoom_in = tk.Button(text="Zoom In")
+con_zoom_in = tk.Button(text="Zoom In", command=zoom_in)
 con_zoom_in.grid(row=2, column=6)
 con_zoom_out = tk.Button(text="Zoom Out")
 con_zoom_out.grid(row=3, column=6)
