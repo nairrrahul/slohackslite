@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 window = tk.Tk()
-window.title("PyGrapher")
+window.title("PyCalculator")
 window.iconbitmap('icoi.ico')
 
 mp_list = []
@@ -166,7 +166,7 @@ def get_d(in_it):
             text="Too Complicated\nFor Grapher") if "Integral" in integ else d_ic.configure(text=integ)
 
 
-title = tk.Label(text="PyGrapher", font=("Consolas", 20))
+title = tk.Label(text="PyCalculator", font=("Consolas", 20))
 title.grid(row=0, column=0, columnspan=7)
 
 eq_h = tk.Label(text="Equation", font=("Arial", 12), bg="#E0E0E0")
