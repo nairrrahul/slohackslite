@@ -70,23 +70,34 @@ def dc(choice):
         actual_error.configure(text="Cannot Remove From \nEmpty Eq.")
 
 
-def graph_function(list_func, min, max):
-    # yo please what the heck is happening here man
-    b_s = ''
-    good_list = ''
-    for i in range(len(list_func)):
-        b_s += list_func[i]
-        good_list += text_list[i]
-    x1 = np.array(range(int(min)*10, int(max)*10+1))
-    x = x1/10
-    x_0 = x.tolist()
-    y = eval(b_s)
-    y_0 = y.tolist()
-    plt.axis((mix, mx, miy, may))
-    graph.plot(x_0, y_0)
-    eq_y.configure(text="y="+good_list)
+def clear_function():
+    plt.cla()
+    graph.plot(xa0, ya0, color='black')
+    graph.plot(xa1, ya1, color='black')
+    graph_canv = FigureCanvasTkAgg(fig, master=window)
     graph_canv.draw()
-    graph_canv.get_tk_widget().grid(row=1, column=1, rowspan=4, columnspan=5)
+
+
+def graph_function(list_func, min, max):
+    try:
+        b_s = ''
+        good_list = ''
+        for i in range(len(list_func)):
+            b_s += list_func[i]
+            good_list += text_list[i]
+        x1 = np.array(range(int(min)*10-1, int(max)*10+2))
+        x = x1/10
+        x_0 = x.tolist()
+        y = eval(b_s)
+        y_0 = y.tolist()
+        plt.axis((mix, mx, miy, may))
+        graph.plot(x_0, y_0)
+        eq_y.configure(text="y="+good_list)
+        graph_canv.draw()
+        graph_canv.get_tk_widget().grid(row=1, column=1, rowspan=4, columnspan=5)
+    except SyntaxError:
+        actual_error.configure(
+            text="Check Equation. Don't Forget\na * sign for mult.")
 
 
 def zoom_in():
@@ -95,7 +106,16 @@ def zoom_in():
     plt.cla()
     graph.plot(xa0, ya0, color='black')
     graph.plot(xa1, ya1, color='black')
-    graph_function(mp_list, mix/2, mx/2)
+    graph_function(mp_list, mix, mx)
+
+
+def zoom_out():
+    global mix, mx, miy, may
+    mix, mx, miy, may = mix*2, mx*2, miy*2, may*2
+    plt.cla()
+    graph.plot(xa0, ya0, color='black')
+    graph.plot(xa1, ya1, color='black')
+    graph_function(mp_list, mix, mx)
 
 
 title = tk.Label(text="PyGrapher", font=("Consolas", 20))
@@ -121,9 +141,9 @@ con_h = tk.Label(text="Controls", font=("Arial", 12), bg="#E0E0E0")
 con_h.grid(row=1, column=6)
 con_zoom_in = tk.Button(text="Zoom In", command=zoom_in)
 con_zoom_in.grid(row=2, column=6)
-con_zoom_out = tk.Button(text="Zoom Out")
+con_zoom_out = tk.Button(text="Zoom Out", command=zoom_out)
 con_zoom_out.grid(row=3, column=6)
-con_clear_graph = tk.Button(text="Clear Graph")
+con_clear_graph = tk.Button(text="Clear Graph", command=clear_function)
 con_clear_graph.grid(row=4, column=6)
 
 x = tk.Button(text="x", command=lambda: up_eq(x['text']))
