@@ -6,13 +6,17 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 window = tk.Tk()
 
-fig = plt.figure(figsize=(4, 3))
-graph = fig.add_subplot(111)
-
 mp_list = []
 sym_list = []
 text_list = []
 base_str = ""
+mix, miy, mx, may = -10, -10, 10, 10
+
+fig = plt.figure(figsize=(4, 3))
+graph = fig.add_subplot(111)
+plt.axis((mix, mx, miy, may))
+graph_canv = FigureCanvasTkAgg(fig, master=window)
+graph_canv.draw()
 
 
 def update_base():
@@ -26,6 +30,10 @@ def update_base():
 def up_eq(text_name):
     actual_error.configure(text="")
     text_list.append(text_name)
+    if text_name == '^':
+        mp_list.append('**')
+    else:
+        mp_list.append(text_name)
     update_base()
 
 
@@ -34,6 +42,7 @@ def add_num():
         float(num_e.get())
         actual_error.configure(text="")
         text_list.append(num_e.get())
+        mp_list.append(num_e.get())
         num_e.delete(0, "end")
         update_base()
     except ValueError:
@@ -50,6 +59,22 @@ def dc(choice):
         update_base()
     except IndexError:
         actual_error.configure(text="Cannot Remove From \nEmpty Eq.")
+
+
+def graph_function(list_func, min, max):
+    # yo please what the heck is happening here man
+    b_s = ''
+    for i in list_func:
+        b_s += i
+    x1 = np.array(range(min*10, max*10+1))
+    x = x1/10
+    y = eval(b_s)
+    print(x)
+    print(y)
+    plt.axis((mix, mx, miy, may))
+    graph.plot(x, y)
+    eq_y.configure(text="y="+b_s)
+    graph_canv.get_tk_widget().grid(row=1, column=1, rowspan=4, columnspan=5)
 
 
 title = tk.Label(text="PyGrapher", font=("Consolas", 20))
@@ -119,12 +144,11 @@ actual_error.grid(row=6, column=6)
 
 y_eq = tk.Label(text="y= " + base_str, bg="#E0E0E0")
 y_eq.grid(row=5, column=1, columnspan=4)
-g_button = tk.Button(text="GRAPH")
+g_button = tk.Button(
+    text="GRAPH", command=lambda: graph_function(mp_list, mix, mx))
 g_button.grid(row=5, column=5)
 
 
-graph_canv = FigureCanvasTkAgg(fig, master=window)
-graph_canv.draw()
 graph_canv.get_tk_widget().grid(row=1, column=1, rowspan=4, columnspan=5)
 
 window.mainloop()
