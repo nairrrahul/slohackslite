@@ -1,18 +1,23 @@
 import tkinter as tk
 import matplotlib.pyplot as plt
-import sympy
+import sympy as sy
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 window = tk.Tk()
+window.title("PyGrapher")
+window.iconbitmap('icoi.ico')
 
 mp_list = []
 sym_list = []
 text_list = []
+choices = ["Derivative", "Antiderivative"]
 base_str = ""
 mix, miy, mx, may = -10, -10, 10, 10
 dict_s = {"^": "**", "e^": "np.exp", "ln": "np.log",
           "tan": "np.tan", "cos": "np.cos", "sin": "np.sin"}
+dict_sym = {"^": "**", "e^": "sy.exp", "ln": "sy.ln",
+            "tan": "sy.tan", "cos": "sy.cos", "sin": "sy.sin"}
 
 fig = plt.figure(figsize=(4, 3))
 graph = fig.add_subplot(111)
@@ -44,6 +49,10 @@ def up_eq(text_name):
         mp_list.append(dict_s[text_name])
     else:
         mp_list.append(text_name)
+    if text_name in dict_sym:
+        sym_list.append(dict_sym[text_name])
+    else:
+        sym_list.append(text_name)
     update_base()
 
 
@@ -53,6 +62,7 @@ def add_num():
         actual_error.configure(text="")
         text_list.append(num_e.get())
         mp_list.append(num_e.get())
+        sym_list.append(num_e.get())
         num_e.delete(0, "end")
         update_base()
     except ValueError:
@@ -61,13 +71,15 @@ def add_num():
 
 def dc(choice):
     actual_error.configure(text="")
-    global text_list, mp_list
+    global text_list, mp_list, sym_list
     try:
         text_list.pop()
         mp_list.pop()
+        sym_list.pop()
         if choice == 1:
             text_list = []
             mp_list = []
+            sym_list = []
         update_base()
     except IndexError:
         actual_error.configure(text="Cannot Remove From \nEmpty Eq.")
@@ -110,7 +122,7 @@ def graph_function(list_func, min, max):
         graph_canv.get_tk_widget().grid(row=1, column=1, rowspan=4, columnspan=5)
     except SyntaxError:
         actual_error.configure(
-            text="Check Equation. Don't Forget\na * sign for mult.")
+            text="Check Equation. Don't Forget\na * sign for mult. or \nparentheses")
 
 
 def zoom_in():
@@ -125,10 +137,33 @@ def zoom_in():
 def zoom_out():
     global mix, mx, miy, may
     mix, mx, miy, may = mix*2, mx*2, miy*2, may*2
+    xa0, ya0 = [mix*20, mx*20], [0, 0]
+    xa1, ya1 = [0, 0], [miy*20, may*20]
     plt.cla()
     graph.plot(xa0, ya0, color='black')
     graph.plot(xa1, ya1, color='black')
     graph_function(mp_list, mix, mx)
+
+
+def get_d(in_it):
+    x = sy.Symbol('x')
+    bs = ""
+    for i in sym_list:
+        bs += i
+    d_ic.configure(text="")
+    if in_it == "Derivative":
+        deriv = str(eval(bs).diff(x))
+        deriv = deriv.replace("**", "^")
+        deriv = deriv.replace("*", "")
+        deriv = deriv.replace("exp", "e^")
+        d_ic.configure(text=deriv)
+    else:
+        integ = str(eval(bs).integrate(x))
+        integ = integ.replace("**", "^")
+        integ = integ.replace("*", "")
+        integ = integ.replace("exp", "e^")
+        d_ic.configure(
+            text="Too Complicated\nFor Grapher") if "Integral" in integ else d_ic.configure(text=integ)
 
 
 title = tk.Label(text="PyGrapher", font=("Consolas", 20))
@@ -138,10 +173,16 @@ eq_h = tk.Label(text="Equation", font=("Arial", 12), bg="#E0E0E0")
 eq_h.grid(row=1, column=0)
 eq_y = tk.Label(text="y=")
 eq_y.grid(row=2, column=0)
-eq_deriv = tk.Button(text="Graph Deriv.")
-eq_int = tk.Button(text="Graph Anti-Deriv")
+
+calc_choice = tk.StringVar(window)
+calc_choice.set(choices[0])
+eq_deriv = tk.OptionMenu(window, calc_choice, *choices)
+eq_int = tk.Button(text="Calculate", bg="black", fg="white",
+                   command=lambda: get_d(calc_choice.get()))
+d_ic = tk.Label()
 eq_deriv.grid(row=3, column=0)
 eq_int.grid(row=4, column=0)
+d_ic.grid(row=5, column=0)
 
 num_h = tk.Label(text="Insert Number", font=("Arial", 12), bg="#E0E0E0")
 num_e = tk.Entry(width=7)
@@ -152,11 +193,14 @@ num_b.grid(row=8, column=0)
 
 con_h = tk.Label(text="Controls", font=("Arial", 12), bg="#E0E0E0")
 con_h.grid(row=1, column=6)
-con_zoom_in = tk.Button(text="Zoom In", command=zoom_in)
+con_zoom_in = tk.Button(text="Zoom In", command=zoom_in,
+                        bg="black", fg="white")
 con_zoom_in.grid(row=2, column=6)
-con_zoom_out = tk.Button(text="Zoom Out", command=zoom_out)
+con_zoom_out = tk.Button(
+    text="Zoom Out", command=zoom_out, bg="black", fg="white")
 con_zoom_out.grid(row=3, column=6)
-con_clear_graph = tk.Button(text="Reset Graph", command=clear_function)
+con_clear_graph = tk.Button(
+    text="Reset Graph", command=clear_function, bg="black", fg="white")
 con_clear_graph.grid(row=4, column=6)
 
 x = tk.Button(text="x", command=lambda: up_eq(x['text']))
@@ -199,7 +243,7 @@ actual_error.grid(row=6, column=6)
 y_eq = tk.Label(text="y= " + base_str, bg="#E0E0E0")
 y_eq.grid(row=5, column=1, columnspan=4)
 g_button = tk.Button(
-    text="GRAPH", command=lambda: graph_function(mp_list, mix, mx))
+    text="GRAPH", command=lambda: graph_function(mp_list, mix, mx), bg="#E0E0E0")
 g_button.grid(row=5, column=5)
 
 
