@@ -24,6 +24,7 @@ def update_base():
 
 
 def up_eq(text_name):
+    actual_error.configure(text="")
     text_list.append(text_name)
     update_base()
 
@@ -37,6 +38,18 @@ def add_num():
         update_base()
     except ValueError:
         actual_error.configure(text="Invalid Number")
+
+
+def dc(choice):
+    actual_error.configure(text="")
+    global text_list
+    try:
+        text_list.pop()
+        if choice == 1:
+            text_list = []
+        update_base()
+    except IndexError:
+        actual_error.configure(text="Cannot Remove From \nEmpty Eq.")
 
 
 title = tk.Label(text="PyGrapher", font=("Consolas", 20))
@@ -93,9 +106,9 @@ par_close = tk.Button(text=")", command=lambda: up_eq(par_close['text']))
 par_close.grid(row=7, column=5)
 tan = tk.Button(text="tan", command=lambda: up_eq(tan['text']))
 tan.grid(row=8, column=3)
-dele = tk.Button(text="DEL")
+dele = tk.Button(text="DEL", command=lambda: dc(0))
 dele.grid(row=8, column=5)
-clear = tk.Button(text="CLEAR")
+clear = tk.Button(text="CLEAR", command=lambda: dc(1))
 clear.grid(row=8, column=4)
 
 err_h = tk.Label(text="Error Log", font=("Arial", 12), bg="#E0E0E0")
@@ -106,7 +119,12 @@ actual_error.grid(row=6, column=6)
 
 y_eq = tk.Label(text="y= " + base_str, bg="#E0E0E0")
 y_eq.grid(row=5, column=1, columnspan=4)
-g_button = tk.Button(text="GRAPH", pady=5)
+g_button = tk.Button(text="GRAPH")
 g_button.grid(row=5, column=5)
+
+
+graph_canv = FigureCanvasTkAgg(fig, master=window)
+graph_canv.draw()
+graph_canv.get_tk_widget().grid(row=1, column=1, rowspan=4, columnspan=5)
 
 window.mainloop()
