@@ -9,6 +9,9 @@ window = tk.Tk()
 fig = plt.figure(figsize=(4, 3))
 graph = fig.add_subplot(111)
 
+mp_list = []
+sym_list = []
+
 title = tk.Label(text="PyGrapher", font=("Consolas", 20))
 title.grid(row=0, column=0, columnspan=7)
 
@@ -40,6 +43,50 @@ con_zoom_out.grid(row=3, column=6)
 con_clear_graph = tk.Button(text="Clear Graph")
 con_clear_graph.grid(row=4, column=6)
 
+x = tk.Button(text="X")
+x.grid(row=6, column=1)
+
+exponent = tk.Button(text="^")
+exponent.grid(row=7, column=1)
+
+sin = tk.Button(text="Sin")
+sin.grid(row=8, column=1)
+
+plus = tk.Button(text="+")
+plus.grid(row=6, column=2)
+
+e = tk.Button(text="e^")
+e.grid(row=7, column=2)
+
+cos = tk.Button(text="cos")
+cos.grid(row=8, column=2)
+
+neg = tk.Button(text="-")
+neg.grid(row=6, column=3)
+
+div = tk.Button(text="/")
+div.grid(row=6, column=4)
+
+mult = tk.Button(text="*")
+mult.grid(row=6, column=5)
+
+ln = tk.Button(text="ln")
+ln.grid(row=7, column=3)
+
+par_open = tk.Button(text="(")
+par_open.grid(row=7, column=4)
+
+par_close = tk.Button(text=")")
+par_close.grid(row=7, column=5)
+
+tan = tk.Button(text="tan")
+tan.grid(row=8, column=3)
+
+dele = tk.Button(text="DEL")
+dele.grid(row=8, column=5)
+
+clear = tk.Button(text="Clear")
+clear.grid(row=8, column=4)
 
 err_h = tk.Label(text="Error Log")
 err_h.grid(row=5, column=6, rowspan=4)
