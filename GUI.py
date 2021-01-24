@@ -11,6 +11,8 @@ sym_list = []
 text_list = []
 base_str = ""
 mix, miy, mx, may = -10, -10, 10, 10
+dict_s = {"^": "**", "e^": "np.exp", "ln": "np.log",
+          "tan": "np.tan", "cos": "np.cos", "sin": "np.sin"}
 
 fig = plt.figure(figsize=(4, 3))
 graph = fig.add_subplot(111)
@@ -35,10 +37,11 @@ def update_base():
 
 
 def up_eq(text_name):
+    global dict_s
     actual_error.configure(text="")
     text_list.append(text_name)
-    if text_name == '^':
-        mp_list.append('**')
+    if text_name in dict_s:
+        mp_list.append(dict_s[text_name])
     else:
         mp_list.append(text_name)
     update_base()
@@ -72,6 +75,8 @@ def dc(choice):
 
 def clear_function():
     plt.cla()
+    mix, miy, mx, may = -10, -10, 10, 10
+    plt.axis((mix, mx, miy, may))
     graph.plot(xa0, ya0, color='black')
     graph.plot(xa1, ya1, color='black')
     graph_canv = FigureCanvasTkAgg(fig, master=window)
@@ -80,6 +85,9 @@ def clear_function():
 
 def graph_function(list_func, min, max):
     try:
+        plt.cla()
+        graph.plot(xa0, ya0, color='black')
+        graph.plot(xa1, ya1, color='black')
         b_s = ''
         good_list = ''
         for i in range(len(list_func)):
@@ -143,7 +151,7 @@ con_zoom_in = tk.Button(text="Zoom In", command=zoom_in)
 con_zoom_in.grid(row=2, column=6)
 con_zoom_out = tk.Button(text="Zoom Out", command=zoom_out)
 con_zoom_out.grid(row=3, column=6)
-con_clear_graph = tk.Button(text="Clear Graph", command=clear_function)
+con_clear_graph = tk.Button(text="Reset Graph", command=clear_function)
 con_clear_graph.grid(row=4, column=6)
 
 x = tk.Button(text="x", command=lambda: up_eq(x['text']))
